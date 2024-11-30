@@ -29,7 +29,11 @@ main(int argc, char *argv[])
     panic("fork()");
   }
 
-  const int N = 4;
+  // const int N = 4;
+  // NOTE const int in C is not constant expression.
+  //      char buffer[N] would be VLA.
+#define N 4
+
   char buffer[N];
   int n;
   int my_pid = getpid();
