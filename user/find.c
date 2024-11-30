@@ -31,6 +31,10 @@ find(const char *path, const char *name) {
     fprintf(1, "%s\n", path);
   }
 
+  // debug
+  printf("line %d\n", __LINE__);
+  printf("path = \"%s\"\n", path);
+
   switch (st.type) {
     case T_DEVICE:
     case T_FILE: {
@@ -49,6 +53,10 @@ find(const char *path, const char *name) {
       if (de.inum == 0) {
         continue;
       }
+      if (strcmp(de.name, ".") == 0 || strcmp(de.name, "..") == 0) {
+        // skip current dir, or parent dir.
+        continue;
+      }
       memmove(p, de.name, DIRSIZ);
       p[DIRSIZ] = 0;
 
@@ -57,6 +65,8 @@ find(const char *path, const char *name) {
 
     }
   }
+  // NOTE remember to close the fd.
+  close(fd);
 }
 
 int
