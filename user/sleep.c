@@ -12,4 +12,6 @@ main(int argc, char *argv[])
   // NOTE if the string is not a valid decimal number, them atoi() returns 0.
   int dt = atoi(argv[1]);
   sleep(dt);
+
+  exit(0);
 }
