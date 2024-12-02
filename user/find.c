@@ -73,7 +73,7 @@ int
 main(int argc, char *argv[])
 {
   if (argc < 3) {
-    const char *usage_str = "usage: find <dir> <some-name>";
+    const char *usage_str = "usage: find directory some_name";
     fprintf(2, usage_str);
     exit(1);
   }
