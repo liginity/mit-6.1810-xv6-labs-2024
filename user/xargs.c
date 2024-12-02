@@ -14,8 +14,8 @@ void
 xargs(char *command, char *initial_arguments[], int length)
 {
   // debug
-  printf("command = \"%s\"\n", command);
-  printf("length = %d\n", length);
+  // printf("command = \"%s\"\n", command);
+  // printf("length = %d\n", length);
 
   // the delimiter char
   char delim = ' ';
@@ -29,9 +29,6 @@ xargs(char *command, char *initial_arguments[], int length)
   }
 
   int line_length = 0;
-  // debug
-  printf("line %d\n", __LINE__);
-
   while ((line_length = read_line(0, buffer, sizeof(buffer) - 1)) > 0) {
     buffer[line_length + 1] = '\0';
     // reset some variables
@@ -66,9 +63,9 @@ xargs(char *command, char *initial_arguments[], int length)
     // set null pointer at the end of arg list
     args[arg_count] = 0;
     // debug
-    for (int i = 0; i < arg_count; ++i) {
-      printf("args[%d] = \"%s\"\n", i, args[i]);
-    }
+    // for (int i = 0; i < arg_count; ++i) {
+    //   printf("args[%d] = \"%s\"\n", i, args[i]);
+    // }
 
     int pid;
     pid = fork();
@@ -121,7 +118,7 @@ read_line(int fd, void *buffer, int size)
     ++p;
   }
   // debug
-  printf("buffer (length = %d): \"%s\"\n", i, (char *) buffer);
+  // printf("buffer (length = %d): \"%s\"\n", i, (char *) buffer);
   return i;
 }
 
