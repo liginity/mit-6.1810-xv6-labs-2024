@@ -34,6 +34,9 @@ xargs(char *command, char *initial_arguments[], int length)
 
   while ((line_length = read_line(0, buffer, sizeof(buffer) - 1)) > 0) {
     buffer[line_length + 1] = '\0';
+    // reset some variables
+    arg_count = 1 + length;
+
     // delimit each argument
     char *slow = buffer;
     char *fast = buffer;
