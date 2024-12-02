@@ -78,6 +78,7 @@ main(int argc, char *argv[])
     exit(1);
   }
 
+  // TODO-MORE should ensure "path" is a directory.
   const char *path = argv[1];
   const char *name = argv[2];
   if (strcmp(path, name) == 0) {
