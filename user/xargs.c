@@ -32,7 +32,7 @@ xargs(char *command, char *initial_arguments[], int length)
   // debug
   printf("line %d\n", __LINE__);
 
-  while ((line_length = read_line(0, buffer, sizeof(buffer)) - 1) > 0) {
+  while ((line_length = read_line(0, buffer, sizeof(buffer) - 1)) > 0) {
     buffer[line_length + 1] = '\0';
     // delimit each argument
     char *slow = buffer;
