@@ -8,7 +8,8 @@
 #define N 512
 
 void
-find(const char *path, const char *name) {
+find(const char *path, const char *name)
+{
   char buffer[N];
   char *p;
   int fd;
@@ -32,11 +33,11 @@ find(const char *path, const char *name) {
   // printf("path = \"%s\"\n", path);
 
   switch (st.type) {
-    case T_DEVICE:
-    case T_FILE: {
-      break;
-    }
-    case T_DIR: {
+  case T_DEVICE:
+  case T_FILE: {
+    break;
+  }
+  case T_DIR: {
     if (strlen(path) + 1 + DIRSIZ + 1 > sizeof(buffer)) {
       fprintf(2, "find: path too long\n");
       break;
@@ -62,8 +63,7 @@ find(const char *path, const char *name) {
 
       find(buffer, name);
     }
-
-    }
+  }
   }
   // NOTE remember to close the fd.
   close(fd);
