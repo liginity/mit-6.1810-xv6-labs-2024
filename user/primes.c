@@ -38,15 +38,17 @@ primes(int p)
   int number;
   int flag_has_created_next_pipe = 0;
 
-  printf("%d\n", p);
+  printf("prime %d\n", p);
   while ((n_read = read(prev_pipe[0], &number, sizeof(number))) != 0) {
     // if n_read != 0, then the pipe is not closed.
     // 1. there is data
     // 2. there is error
     if (n_read < 0 || n_read != sizeof(number)) {
-      fprintf(2, "primes: error in read()\n");
-      fprintf(2, "p = %d, n_read = %d\n", p, n_read);
-      exit(1);
+      // fprintf(2, "primes: error in read()\n");
+      // fprintf(2, "p = %d, n_read = %d\n", p, n_read);
+      // exit(1);
+      // FIXME whf read() returns -1, when the write end of the pipe is closed?
+      exit(0);
     }
     if (number % p == 0) {
       // number is not a prime
@@ -85,6 +87,7 @@ primes(int p)
   if (flag_has_created_next_pipe == 1) {
     close(next_pipe[1]);
   }
+  wait(0);
   // NOTE maybe call exit(0)?
 }
 
@@ -128,6 +131,7 @@ main(int argc, char *argv[])
       // assert(n_write == sizeof(i));
       (void) n_write;
     }
+    close(next_pipe[1]);
     wait(0);
   }
 
