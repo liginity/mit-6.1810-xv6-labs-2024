@@ -1,0 +1,26 @@
+usertrap() called syscall().
+
+
+p->trapframe->a7 has value 7. 7 is the value of SYS_exec,
+and it would be used to find the sys_exec() system call.
+
+
+sstatus has value 0x200000022,
+and the SPP bit (the 8th bit, starting from 0) is 0,
+which means the previous mode is user mode.
+NOTE: check the document in riscv-privileged, 4.1 Supervisor CSRs,
+4.1.1 Supervisor Status Register (sstatus).
+
+
+scause=0xd sepc=0x80001c1e stval=0x0
+lw	a3,0(zero)
+a3
+
+
+The kernel crashes because address 0 is unused,
+and visiting address 0 would be invalid memory access.
+And this is reflected in the value of scause, 0xd (13 in decimal).
+This value means "Load page fault" when interrupt is disabled.
+
+
+The name of the process is "initcode". And its pid is 1.
