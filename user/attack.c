@@ -28,14 +28,14 @@ main(int argc, char *argv[])
   //   printf("\"\n");
   // }
 
-  const char *page_start = end + 16 * PGSIZE;
-  printf("content: \"");
-  for (int i = 0; i < offset; ++i) {
-    // printf("%c", page_start[i]);
-    // putc(page_start[i]);
-    write(1, page_start + i, 1);
-  }
-  printf("\"\n");
+  // const char *page_start = end + 16 * PGSIZE;
+  // printf("content: \"");
+  // for (int i = 0; i < offset; ++i) {
+  //   // printf("%c", page_start[i]);
+  //   // putc(page_start[i]);
+  //   write(1, page_start + i, 1);
+  // }
+  // printf("\"\n");
 
   // from my test, the secret sits on the 16th page.
   const char *secret = end + 16 * PGSIZE + offset;
