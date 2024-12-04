@@ -130,6 +130,33 @@ static uint64 (*syscalls[])(void) = {
 [SYS_trace]   sys_trace,
 };
 
+// An array mapping syscall numbers from syscall.h
+// to the name of the system call.
+static const char *syscall_names[] = {
+[SYS_fork]    "fork",
+[SYS_exit]    "exit",
+[SYS_wait]    "wait",
+[SYS_pipe]    "pipe",
+[SYS_read]    "read",
+[SYS_kill]    "kill",
+[SYS_exec]    "exec",
+[SYS_fstat]   "fstat",
+[SYS_chdir]   "chdir",
+[SYS_dup]     "dup",
+[SYS_getpid]  "getpid",
+[SYS_sbrk]    "sbrk",
+[SYS_sleep]   "sleep",
+[SYS_uptime]  "uptime",
+[SYS_open]    "open",
+[SYS_write]   "write",
+[SYS_mknod]   "mknod",
+[SYS_unlink]  "unlink",
+[SYS_link]    "link",
+[SYS_mkdir]   "mkdir",
+[SYS_close]   "close",
+[SYS_trace]   "trace",
+};
+
 void
 syscall(void)
 {
@@ -143,9 +170,9 @@ syscall(void)
     p->trapframe->a0 = syscalls[num]();
     if ((1 << num) & p->syscall_mask) {
       // this syscall is traced
-      const char *syscall_name = "TODO";
+      const char *syscall_name = syscall_names[num];
       uint64 syscall_ret = p->trapframe->a0;
-      printf("%d: syscall %s -> %lu\n", p->pid, syscall_name, syscall_ret);
+      printf("%d: syscall %s -> %ld\n", p->pid, syscall_name, syscall_ret);
     }
   } else {
     printf("%d %s: unknown sys call %d\n",
