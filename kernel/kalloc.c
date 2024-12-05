@@ -33,7 +33,7 @@ kinit()
   //     [end, SUPERPG_BEGIN]: normal page
   //     [SUPERPG_BEGIN, SUPERPG_END]: superpage
   freerange(end, (void*)SUPERPG_BEGIN);
-  superfreerange((void *)SUPERPG_BEGIN, (void *)PHYSTOP);
+  superfreerange((void *)SUPERPG_BEGIN, (void *)SUPERPG_END);
 }
 
 void
