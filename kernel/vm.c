@@ -488,9 +488,62 @@ copyinstr(pagetable_t pagetable, char *dst, uint64 srcva, uint64 max)
 
 
 #ifdef LAB_PGTBL
+
+// depth = 1, root page-table page
+// depth = 3, leaf page-table page
+void vmprint_tree(pagetable_t pagetable, int depth, uint64 pt_va);
+
 void
-vmprint(pagetable_t pagetable) {
+vmprint(pagetable_t pagetable)
+{
   // your code here
+  printf("page table %p\n", pagetable);
+  vmprint_tree(pagetable, 1, 0);
+}
+
+void
+vmprint_tree(pagetable_t pagetable, int depth, uint64 pt_va)
+{
+  const int LEAF_DEPTH = 3;
+
+  // for depth
+  const char *prefix;
+  switch (depth) {
+  case 1: {
+    prefix = " ..";
+    break;
+  }
+  case 2: {
+    prefix = " .. ..";
+    break;
+  }
+  case 3: {
+    prefix = " .. .. ..";
+    break;
+  }
+  default: {
+    printf("invalid depth: %d\n", depth);
+    return;
+    }
+  }
+
+  // check the ith pte
+  for (int i = 0; i < (PGSIZE / sizeof(pte_t)); ++i) {
+    pte_t *pte = (pte_t *)pagetable + i;
+    if (!(*pte & PTE_V)) {
+      // this page is not valid
+      continue;
+    }
+    uint64 va = pt_va + i * PGSIZE * (1 << ((3 - depth) * 9));
+    uint64 pa = PTE2PA(*pte);
+    // printf("%s%p: pte %p pa %p\n", prefix, va, *pte, pa);
+    printf("%s0x%lx: pte 0x%lx pa 0x%lx\n", prefix, va, *pte, pa);
+
+    if (depth == LEAF_DEPTH) {
+      continue;
+    }
+    vmprint_tree((pagetable_t)pa, depth + 1, va);
+  }
 }
 #endif
 
