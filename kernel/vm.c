@@ -242,6 +242,8 @@ mapsuperpages(pagetable_t pagetable, uint64 va, uint64 size, uint64 pa, int perm
     }
     // this is the level-1 pagetable pte for the superpage
     *pte = PA2PTE(pa) | perm | PTE_V | PTE_R;
+    // debug
+    printf("a = %p\n", (void *)a);
 
     a += SUPERPGSIZE;
     pa += SUPERPGSIZE;

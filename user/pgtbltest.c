@@ -91,6 +91,9 @@ supercheck(uint64 s)
 
   for (uint64 p = s;  p < s + 512 * PGSIZE; p += PGSIZE) {
     pte_t pte = (pte_t) pgpte((void *) p);
+    // debug
+    // fprintf(2, "p = %p\n", (void *)p);
+
     if(pte == 0)
       err("no pte");
     if ((uint64) last_pte != 0 && pte != last_pte) {
@@ -125,10 +128,15 @@ superpg_test()
     err("sbrk failed");
   
   uint64 s = SUPERPGROUNDUP((uint64) end);
+  // debug
+  fprintf(2, "end = %p\n", end);
+  fprintf(2, "s   = %p\n", (void *)s);
   supercheck(s);
   if((pid = fork()) < 0) {
     err("fork");
   } else if(pid == 0) {
+    // debug
+    fprintf(2, "after fork()\n");
     supercheck(s);
     exit(0);
   } else {
