@@ -486,6 +486,7 @@ copyinstr(pagetable_t pagetable, char *dst, uint64 srcva, uint64 max)
   }
 }
 
+// #define LAB_PGTBL
 
 #ifdef LAB_PGTBL
 
@@ -524,7 +525,7 @@ vmprint_tree(pagetable_t pagetable, int depth, uint64 pt_va)
   default: {
     printf("invalid depth: %d\n", depth);
     return;
-    }
+  }
   }
 
   // check the ith pte
@@ -537,7 +538,8 @@ vmprint_tree(pagetable_t pagetable, int depth, uint64 pt_va)
     uint64 va = pt_va + i * PGSIZE * (1 << ((3 - depth) * 9));
     uint64 pa = PTE2PA(*pte);
     // printf("%s%p: pte %p pa %p\n", prefix, va, *pte, pa);
-    printf("%s0x%lx: pte 0x%lx pa 0x%lx\n", prefix, va, *pte, pa);
+    // printf("%s0x%lx: pte 0x%lx pa 0x%lx\n", prefix, va, *pte, pa);
+    printf("%s%p: pte %p pa %p\n", prefix, (void *)va, (void *)*pte, (void *)pa);
 
     if (depth == LEAF_DEPTH) {
       continue;
