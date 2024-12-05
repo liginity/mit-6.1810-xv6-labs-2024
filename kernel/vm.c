@@ -535,7 +535,7 @@ vmprint_tree(pagetable_t pagetable, int depth, uint64 pt_va)
       // this page is not valid
       continue;
     }
-    uint64 va = pt_va + i * PGSIZE * (1 << ((3 - depth) * 9));
+    uint64 va = pt_va + (uint64)(i * PGSIZE) * (1 << ((3 - depth) * 9));
     uint64 pa = PTE2PA(*pte);
     // printf("%s%p: pte %p pa %p\n", prefix, va, *pte, pa);
     // printf("%s0x%lx: pte 0x%lx pa 0x%lx\n", prefix, va, *pte, pa);
