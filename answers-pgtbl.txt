@@ -13,8 +13,8 @@ so those virtual addresses are not used.
 
 page 0, va 0x0000, permission bits: V, R, X, U, A. It should be the program code page.
 page 1, va 0x1000, permission bits: V, R, W, U. It should be program data.
-page 2, va 0x2000, permission bits: V, R, W. stack??
-page 3, va 0x3000, permission bits: V, R, W, U, A, D. user stack?? heap??
+page 2, va 0x2000, permission bits: V, R, W. stack guard page (smaller address, below the stack).
+page 3, va 0x3000, permission bits: V, R, W, U, A, D. user stack (heap is not allocated yet).
 
 page -2, va 0xFFFFE000, permission bits: V, R, W, A, D. process trapframe.
 page -1, va 0xFFFFF000, permission bits: V, R, X, A. trampoline page.
