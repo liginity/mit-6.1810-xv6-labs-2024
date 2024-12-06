@@ -434,7 +434,7 @@ uvmcopy(pagetable_t old, pagetable_t new, uint64 sz)
     szinc = PGSIZE;
     // NOTE assume possible superpage is superpage.
     //      every memory region that has proper alignment and size.
-    if ((i % SUPERPGSIZE) == 0 && i + SUPERPGSIZE <= sz) {
+    if (i > 0 && (i % SUPERPGSIZE) == 0 && i + SUPERPGSIZE <= sz) {
       szinc = SUPERPGSIZE;
     }
     if((pte = walk(old, i, 0)) == 0)

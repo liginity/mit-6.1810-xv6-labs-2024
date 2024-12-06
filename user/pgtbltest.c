@@ -138,6 +138,8 @@ superpg_test()
     // debug
     fprintf(2, "after fork()\n");
     supercheck(s);
+    // debug
+    fprintf(2, "pass 2nd supercheck()\n");
     exit(0);
   } else {
     int status;
