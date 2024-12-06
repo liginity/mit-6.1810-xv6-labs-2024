@@ -432,12 +432,31 @@ uvmcopy(pagetable_t old, pagetable_t new, uint64 sz)
   for(i = 0; i < sz; i += szinc){
     szinc = PGSIZE;
     szinc = PGSIZE;
+    // NOTE assume possible superpage is superpage.
+    //      every memory region that has proper alignment and size.
+    if ((i % SUPERPGSIZE) == 0 && i + SUPERPGSIZE <= sz) {
+      szinc = SUPERPGSIZE;
+    }
     if((pte = walk(old, i, 0)) == 0)
       panic("uvmcopy: pte should exist");
     if((*pte & PTE_V) == 0)
       panic("uvmcopy: page not present");
     pa = PTE2PA(*pte);
     flags = PTE_FLAGS(*pte);
+
+    // for superpage
+    if (szinc == SUPERPGSIZE) {
+      if ((mem = superkalloc()) == 0) {
+        goto err;
+      }
+      memmove(mem, (char *)pa, SUPERPGSIZE);
+      if (mapsuperpages(new, i, SUPERPGSIZE, (uint64)mem, flags) != 0) {
+        superkfree(mem);
+        goto err;
+      }
+      continue;
+    }
+
     if((mem = kalloc()) == 0)
       goto err;
     memmove(mem, (char*)pa, PGSIZE);
