@@ -1,0 +1,27 @@
+va 0x0 pte 0x21FC885B pa 0x87F22000 perm 0x5B
+va 0x1000 pte 0x21FC7C17 pa 0x87F1F000 perm 0x17
+va 0x2000 pte 0x21FC7807 pa 0x87F1E000 perm 0x7
+va 0x3000 pte 0x21FC74D7 pa 0x87F1D000 perm 0xD7
+va 0x4000 pte 0x0 pa 0x0 perm 0x0
+......
+va 0xFFFFD000 pte 0x0 pa 0x0 perm 0x0
+va 0xFFFFE000 pte 0x21FD08C7 pa 0x87F42000 perm 0xC7
+va 0xFFFFF000 pte 0x2000184B pa 0x80006000 perm 0x4B
+
+The first 4 pages and the last 2 pages are valid. Other 14 pages are not valid,
+so those virtual addresses are not used.
+
+page 0, va 0x0000, permission bits: V, R, X, U, A. It should be the program code page.
+page 1, va 0x1000, permission bits: V, R, W, U. It should be program data.
+page 2, va 0x2000, permission bits: V, R, W. stack??
+page 3, va 0x3000, permission bits: V, R, W, U, A, D. user stack?? heap??
+
+page -2, va 0xFFFFE000, permission bits: V, R, W, A, D. process trapframe.
+page -1, va 0xFFFFF000, permission bits: V, R, X, A. trampoline page.
+
+
+The system calls that only read data in the kernel could be made faster with the
+shared page. But there is no other system calls fitting this requirement.
+
+
+The leaf page information in the output in vmprint matches the output in print_pgtbl().
