@@ -279,7 +279,15 @@ uvmunmap(pagetable_t pagetable, uint64 va, uint64 npages, int do_free)
       panic("uvmunmap: not a leaf");
     if(do_free){
       uint64 pa = PTE2PA(*pte);
-      kfree((void*)pa);
+      if (a > 0 && (a % SUPERPGSIZE) == 0 &&
+          (a + SUPERPGSIZE <= va + npages * PGSIZE) && pa >= SUPERPG_BEGIN &&
+          pa < SUPERPG_END) {
+        // assume this is a superpage
+        sz = SUPERPGSIZE;
+        superkfree((void *)pa);
+      } else {
+        kfree((void *)pa);
+      }
     }
     *pte = 0;
   }
