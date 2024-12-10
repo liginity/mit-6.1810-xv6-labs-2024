@@ -26,6 +26,9 @@ struct {
   struct run *freelist;
   // reference count array for physical pages.
   int phpgrcs[(PHYSTOP - KERNBASE) / PGSIZE];
+  // page-table-entry flags for the physical pages.
+  // using this "extra" array is a little wasteful. but it is easy to write code.
+  int pg_flags[(PHYSTOP - KERNBASE) / PGSIZE];
 } kmem;
 
 void
@@ -105,4 +108,35 @@ kalloc(void)
   if(r)
     memset((char*)r, 5, PGSIZE); // fill with junk
   return (void*)r;
+}
+
+// Use copy-on-write to copy a physical page.
+// 1. increase the reference count
+// 2. record the page-table-entry flag
+void
+kcow_copy(void *pa, int flags)
+{
+  if (((uint64)pa % PGSIZE) != 0 || (char *)pa < end || (uint64)pa >= PHYSTOP)
+    panic("kcow_copy");
+
+  // reference count should be at least 1.
+  if (kmem.phpgrcs[PA_TO_RC_ARRAY_INDEX((uint64)pa)] <= 0) {
+    panic("kcow_copy: reference count error");
+  }
+
+  if (kmem.phpgrcs[PA_TO_RC_ARRAY_INDEX((uint64)pa)] == 1) {
+    // record the flags
+    kmem.pg_flags[PA_TO_RC_ARRAY_INDEX((uint64)pa)] = flags;
+  } else {
+    // check the flags
+    // NOTE there is no clear rule for this check
+    // check 1: verify the stored flags and current flags have the same
+    //          PTE_W bit.
+    if ((PTE_W & kmem.pg_flags[PA_TO_RC_ARRAY_INDEX((uint64)pa)]) !=
+        (PTE_W & flags)) {
+      panic("kcow_copy: flags changed");
+    }
+
+    kmem.phpgrcs[PA_TO_RC_ARRAY_INDEX((uint64)pa)] += 1;
+  }
 }
