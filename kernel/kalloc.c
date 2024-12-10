@@ -134,7 +134,12 @@ kcow_inc_rc(void *pa, int flags)
     //          PTE_W bit.
     if ((PTE_W & kmem.pg_flags[PA_TO_RC_ARRAY_INDEX((uint64)pa)]) !=
         (PTE_W & flags)) {
-      panic("kcow_inc_rc: flags changed");
+      // panic("kcow_inc_rc: flags changed");
+      // printf("old flag = 0x%x\n", kmem.pg_flags[PA_TO_RC_ARRAY_INDEX((uint64)pa)]);
+      // printf("new flag = 0x%x\n", flags);
+      // NOTE one case of reaching here:
+      //      when a page with PTE_W is marked as without PTE_W in cow,
+      //      and the page is passed into kcow_inc_rc() for the second time.
     }
   }
   kmem.phpgrcs[PA_TO_RC_ARRAY_INDEX((uint64)pa)] += 1;
