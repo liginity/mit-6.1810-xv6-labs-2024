@@ -136,7 +136,6 @@ kcow_copy(void *pa, int flags)
         (PTE_W & flags)) {
       panic("kcow_copy: flags changed");
     }
-
-    kmem.phpgrcs[PA_TO_RC_ARRAY_INDEX((uint64)pa)] += 1;
   }
+  kmem.phpgrcs[PA_TO_RC_ARRAY_INDEX((uint64)pa)] += 1;
 }
