@@ -373,9 +373,35 @@ copyout(pagetable_t pagetable, uint64 dstva, char *src, uint64 len)
     if(va0 >= MAXVA)
       return -1;
     pte = walk(pagetable, va0, 0);
-    if(pte == 0 || (*pte & PTE_V) == 0 || (*pte & PTE_U) == 0 ||
-       (*pte & PTE_W) == 0)
+    // if(pte == 0 || (*pte & PTE_V) == 0 || (*pte & PTE_U) == 0 ||
+    //    (*pte & PTE_W) == 0)
+    //   return -1;
+    // for cow
+    if (pte == 0 || (*pte & PTE_V) == 0 || (*pte & PTE_U) == 0)
       return -1;
+    if ((*pte & PTE_W) == 0) {
+      // NOTE this code logic is nearly the same as in usertrap().
+      //      could refactor the code.
+      // check the stored flags
+      uint64 pa = PTE2PA(*pte);
+      int flags = kcow_get_flags((void *)pa);
+      if ((flags & PTE_W) == 0) {
+        // this page has no PTE_W bit.
+        return -1;
+      }
+      // this page has PTE_W bit.
+      int rc = kcow_get_rc((void *)pa);
+      if (rc == 1) {
+        *pte |= PTE_W;
+      } else {
+        kcow_dec_rc((void *)pa);
+        char *mem = kalloc();
+        if (mem == 0) {
+          panic("copyout(): no more physical page for cow");
+        }
+        *pte = PA2PTE(mem) | flags;
+      }
+    }
     pa0 = PTE2PA(*pte);
     n = PGSIZE - (dstva - va0);
     if(n > len)
