@@ -95,10 +95,11 @@ kalloc(void)
 
   acquire(&kmem.lock);
   r = kmem.freelist;
-  if(r)
+  if(r) {
     kmem.freelist = r->next;
-  // initialize the reference count for this page.
-  kmem.phpgrcs[PA_TO_RC_ARRAY_INDEX((uint64)r)] = 1;
+    // initialize the reference count for this page.
+    kmem.phpgrcs[PA_TO_RC_ARRAY_INDEX((uint64)r)] = 1;
+  }
   release(&kmem.lock);
 
   if(r)
