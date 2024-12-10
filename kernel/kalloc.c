@@ -139,3 +139,45 @@ kcow_inc_rc(void *pa, int flags)
   }
   kmem.phpgrcs[PA_TO_RC_ARRAY_INDEX((uint64)pa)] += 1;
 }
+
+void
+kcow_dec_rc(void *pa)
+{
+  // NOTE kcow_dec_rc() is used when do the writing in copy-on-write
+  //      in usertrap().
+  // maybe the reference count should be at least 2.
+  if (((uint64)pa % PGSIZE) != 0 || (char *)pa < end || (uint64)pa >= PHYSTOP)
+    panic("kcow_dec_rc");
+
+  // reference count should be at least 1.
+  if (kmem.phpgrcs[PA_TO_RC_ARRAY_INDEX((uint64)pa)] <= 0) {
+    panic("kcow_dec_rc: reference count error");
+  }
+  kmem.phpgrcs[PA_TO_RC_ARRAY_INDEX((uint64)pa)] -= 1;
+}
+
+int
+kcow_get_rc(void *pa)
+{
+  if (((uint64)pa % PGSIZE) != 0 || (char *)pa < end || (uint64)pa >= PHYSTOP)
+    panic("kcow_get_rc");
+
+  // reference count should be at least 1.
+  if (kmem.phpgrcs[PA_TO_RC_ARRAY_INDEX((uint64)pa)] <= 0) {
+    panic("kcow_get_rc: reference count error");
+  }
+  return kmem.phpgrcs[PA_TO_RC_ARRAY_INDEX((uint64)pa)];
+}
+
+int
+kcow_get_flags(void *pa)
+{
+  if (((uint64)pa % PGSIZE) != 0 || (char *)pa < end || (uint64)pa >= PHYSTOP)
+    panic("kcow_get_rc");
+
+  // reference count should be at least 1.
+  if (kmem.phpgrcs[PA_TO_RC_ARRAY_INDEX((uint64)pa)] <= 0) {
+    panic("kcow_get_rc: reference count error");
+  }
+  return kmem.pg_flags[PA_TO_RC_ARRAY_INDEX((uint64)pa)];
+}

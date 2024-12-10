@@ -64,6 +64,9 @@ void*           kalloc(void);
 void            kfree(void *);
 void            kinit(void);
 void            kcow_inc_rc(void *, int);
+void            kcow_dec_rc(void *);
+int             kcow_get_rc(void *);
+int             kcow_get_flags(void *);
 
 // log.c
 void            initlog(int, struct superblock*);

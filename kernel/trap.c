@@ -67,6 +67,36 @@ usertrap(void)
     syscall();
   } else if((which_dev = devintr()) != 0){
     // ok
+  } else if (r_scause() == 0xf) {
+    // store page fault
+    uint64 va = PGROUNDDOWN(r_stval());
+    pte_t *pte = walk(p->pagetable, va, 0);
+    uint64 pa = PTE2PA(*pte);
+    int flags = kcow_get_flags((void *)pa);
+    if ((flags & PTE_W) == 0) {
+      // this page has no PTE_W bit.
+      // this is a real errer.
+      setkilled(p);
+    } else {
+      // this page has PTE_W bit in the record.
+      // it is a cow page.
+      // MAYBE check stored flags and current flags.
+      int rc = kcow_get_rc((void *)pa);
+      if (rc == 1) {
+        // just set PTE_W bit
+        *pte |= PTE_W;
+      } else {
+        // allocate a new page
+        kcow_dec_rc((void *)pa);
+        char *mem = kalloc();
+        if (mem == 0) {
+          // failed to allocate more page
+          panic("no more new physical page for cow");
+        }
+        memmove(mem, (void *)pa, PGSIZE);
+        *pte = PA2PTE(mem) | flags;
+      }
+    }
   } else {
     printf("usertrap(): unexpected scause 0x%lx pid=%d\n", r_scause(), p->pid);
     printf("            sepc=0x%lx stval=0x%lx\n", r_sepc(), r_stval());
