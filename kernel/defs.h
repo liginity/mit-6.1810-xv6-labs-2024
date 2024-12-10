@@ -63,7 +63,7 @@ void            ramdiskrw(struct buf*);
 void*           kalloc(void);
 void            kfree(void *);
 void            kinit(void);
-void            kcow_copy(void *, int);
+void            kcow_inc_rc(void *, int);
 
 // log.c
 void            initlog(int, struct superblock*);

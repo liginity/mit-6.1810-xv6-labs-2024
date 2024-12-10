@@ -110,18 +110,18 @@ kalloc(void)
   return (void*)r;
 }
 
-// Use copy-on-write to copy a physical page.
+// for a physical page in the copy-on-write feature.
 // 1. increase the reference count
 // 2. record the page-table-entry flag
 void
-kcow_copy(void *pa, int flags)
+kcow_inc_rc(void *pa, int flags)
 {
   if (((uint64)pa % PGSIZE) != 0 || (char *)pa < end || (uint64)pa >= PHYSTOP)
-    panic("kcow_copy");
+    panic("kcow_inc_rc");
 
   // reference count should be at least 1.
   if (kmem.phpgrcs[PA_TO_RC_ARRAY_INDEX((uint64)pa)] <= 0) {
-    panic("kcow_copy: reference count error");
+    panic("kcow_inc_rc: reference count error");
   }
 
   if (kmem.phpgrcs[PA_TO_RC_ARRAY_INDEX((uint64)pa)] == 1) {
@@ -134,7 +134,7 @@ kcow_copy(void *pa, int flags)
     //          PTE_W bit.
     if ((PTE_W & kmem.pg_flags[PA_TO_RC_ARRAY_INDEX((uint64)pa)]) !=
         (PTE_W & flags)) {
-      panic("kcow_copy: flags changed");
+      panic("kcow_inc_rc: flags changed");
     }
   }
   kmem.phpgrcs[PA_TO_RC_ARRAY_INDEX((uint64)pa)] += 1;

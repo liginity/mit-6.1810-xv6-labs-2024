@@ -329,7 +329,7 @@ uvmcopy(pagetable_t old, pagetable_t new, uint64 sz)
     // memmove(mem, (char*)pa, PGSIZE);
 
     // use copy-on-write to copy the page.
-    kcow_copy((void *)pa, flags);
+    kcow_inc_rc((void *)pa, flags);
     // clear the PTE_W bit in the page table entry.
     *pte &= ~PTE_W;
     flags &= ~PTE_W;
