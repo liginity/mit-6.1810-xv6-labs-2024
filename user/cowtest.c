@@ -27,7 +27,10 @@ simpletest()
     *(int*)q = getpid();
   }
 
+  printf("before fork()\n");
+
   int pid = fork();
+  // printf("fork() is finished\n");
   if(pid < 0){
     printf("fork() failed\n");
     exit(-1);
@@ -36,7 +39,9 @@ simpletest()
   if(pid == 0)
     exit(0);
 
+  printf("parent is going to wait()\n");
   wait(0);
+  printf("parent finishes wait()\n");
 
   if(sbrk(-sz) == (char*)0xffffffffffffffffL){
     printf("sbrk(-%d) failed\n", sz);
