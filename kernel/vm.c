@@ -387,6 +387,7 @@ copyout(pagetable_t pagetable, uint64 dstva, char *src, uint64 len)
       int flags = kcow_get_flags((void *)pa);
       if ((flags & PTE_W) == 0) {
         // this page has no PTE_W bit.
+        printf("erroneous destination for copyout\n");
         return -1;
       }
       // this page has PTE_W bit.

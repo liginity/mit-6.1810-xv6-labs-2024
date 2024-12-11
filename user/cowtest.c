@@ -30,7 +30,7 @@ simpletest()
   // printf("before fork()\n");
 
   int pid = fork();
-  printf("fork() is finished\n");
+  // printf("fork() is finished\n");
   if(pid < 0){
     printf("fork() failed\n");
     exit(-1);
@@ -41,7 +41,7 @@ simpletest()
 
   // printf("parent is going to wait()\n");
   wait(0);
-  printf("parent finishes wait()\n");
+  // printf("parent finishes wait()\n");
 
   if(sbrk(-sz) == (char*)0xffffffffffffffffL){
     printf("sbrk(-%d) failed\n", sz);
@@ -133,14 +133,16 @@ void
 filetest()
 {
   printf("file: ");
-  
+  printf("&buf = %p\n", &buf);
   buf[0] = 99;
 
   for(int i = 0; i < 4; i++){
+    // printf("going to call pipe()\n");
     if(pipe(fds) != 0){
       printf("pipe() failed\n");
       exit(-1);
     }
+    // printf("before fork() in filetest()\n");
     int pid = fork();
     if(pid < 0){
       printf("fork failed\n");
@@ -148,6 +150,7 @@ filetest()
     }
     if(pid == 0){
       sleep(1);
+      // printf("child is going to read()\n");
       if(read(fds[0], buf, sizeof(i)) != sizeof(i)){
         printf("error: read failed\n");
         exit(1);
@@ -160,6 +163,7 @@ filetest()
       }
       exit(0);
     }
+    // printf("parent is going to write()\n");
     if(write(fds[1], &i, sizeof(i)) != sizeof(i)){
       printf("error: write failed\n");
       exit(-1);

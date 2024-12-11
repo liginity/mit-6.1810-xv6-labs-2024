@@ -28,6 +28,7 @@ struct {
   int phpgrcs[(PHYSTOP - KERNBASE) / PGSIZE];
   // page-table-entry flags for the physical pages.
   // using this "extra" array is a little wasteful. but it is easy to write code.
+  // NOTE when a page is not a cow page, the matching flags here is -1.
   int pg_flags[(PHYSTOP - KERNBASE) / PGSIZE];
 } kmem;
 
@@ -83,6 +84,7 @@ kfree(void *pa)
   r = (struct run*)pa;
 
   acquire(&kmem.lock);
+  kmem.pg_flags[PA_TO_RC_ARRAY_INDEX((uint64)pa)] = -1;
   r->next = kmem.freelist;
   kmem.freelist = r;
   release(&kmem.lock);
@@ -124,7 +126,8 @@ kcow_inc_rc(void *pa, int flags)
     panic("kcow_inc_rc: reference count error");
   }
 
-  if (kmem.phpgrcs[PA_TO_RC_ARRAY_INDEX((uint64)pa)] == 1) {
+  if (kmem.phpgrcs[PA_TO_RC_ARRAY_INDEX((uint64)pa)] == 1 &&
+      kmem.pg_flags[PA_TO_RC_ARRAY_INDEX((uint64)pa)] == -1) {
     // record the flags
     kmem.pg_flags[PA_TO_RC_ARRAY_INDEX((uint64)pa)] = flags;
   } else {
