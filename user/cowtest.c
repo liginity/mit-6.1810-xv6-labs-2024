@@ -225,6 +225,7 @@ forkforktest()
   }
 
   printf("ok\n");
+  printf("why failed here?\n");
 }
 
 int
