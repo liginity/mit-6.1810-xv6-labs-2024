@@ -82,6 +82,10 @@ usertrap(void)
       // it is a cow page.
       // MAYBE check stored flags and current flags.
       int rc = kcow_get_rc((void *)pa);
+      if (rc <= 0) {
+        printf("invalid physical page: it has rc = 0\n");
+        panic("usertrap(): invalid reference count");
+      }
       if (rc == 1) {
         // just set PTE_W bit
         *pte |= PTE_W;
