@@ -126,12 +126,13 @@ kcow_inc_rc(void *pa, int flags)
     panic("kcow_inc_rc: reference count error");
   }
 
+  acquire(&kmem.lock);
   if (kmem.phpgrcs[PA_TO_RC_ARRAY_INDEX((uint64)pa)] == 1 &&
       kmem.pg_flags[PA_TO_RC_ARRAY_INDEX((uint64)pa)] == -1) {
     // record the flags
-    acquire(&kmem.lock);
+    // acquire(&kmem.lock);
     kmem.pg_flags[PA_TO_RC_ARRAY_INDEX((uint64)pa)] = flags;
-    release(&kmem.lock);
+    // release(&kmem.lock);
   } else {
     // check the flags
     // NOTE there is no clear rule for this check
@@ -147,7 +148,7 @@ kcow_inc_rc(void *pa, int flags)
       //      and the page is passed into kcow_inc_rc() for the second time.
     }
   }
-  acquire(&kmem.lock);
+  // acquire(&kmem.lock);
   kmem.phpgrcs[PA_TO_RC_ARRAY_INDEX((uint64)pa)] += 1;
   release(&kmem.lock);
 }
