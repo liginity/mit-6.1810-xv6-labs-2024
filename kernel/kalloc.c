@@ -166,6 +166,10 @@ kcow_dec_rc(void *pa)
   if (kmem.phpgrcs[PA_TO_RC_ARRAY_INDEX((uint64)pa)] <= 0) {
     panic("kcow_dec_rc: reference count error");
   }
+  if (kmem.phpgrcs[PA_TO_RC_ARRAY_INDEX((uint64)pa)] == 1) {
+    printf("rc = 1, and kcow_dec_rc() in called\n");
+    panic("kcow_get_rc(): there is race condition");
+  }
   acquire(&kmem.lock);
   kmem.phpgrcs[PA_TO_RC_ARRAY_INDEX((uint64)pa)] -= 1;
   release(&kmem.lock);
