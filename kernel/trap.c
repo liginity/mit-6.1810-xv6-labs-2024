@@ -70,6 +70,12 @@ usertrap(void)
   } else if (r_scause() == 0xf) {
     // store page fault
     uint64 va = PGROUNDDOWN(r_stval());
+    if (va >= p->sz) {
+      // if va is too big, it would be invalid.
+      setkilled(p);
+      exit(-1);
+    }
+
     pte_t *pte = walk(p->pagetable, va, 0);
     uint64 pa = PTE2PA(*pte);
     int flags = kcow_get_flags((void *)pa);
