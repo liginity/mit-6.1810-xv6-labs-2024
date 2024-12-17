@@ -391,22 +391,12 @@ copyout(pagetable_t pagetable, uint64 dstva, char *src, uint64 len)
         return -1;
       }
       // this page has PTE_W bit.
-      int rc = kcow_get_rc((void *)pa);
 
-      if (rc <= 0) {
-        printf("invalid physical page: it has rc = 0\n");
-        panic("usertrap(): invalid reference count");
+      char *mem = kcow_get_page((void *)pa, 1);
+      if (mem == 0) {
+        panic("copyout(): no more physical page for cow");
       }
-      if (rc == 1) {
-        *pte |= PTE_W;
-      } else {
-        kcow_dec_rc((void *)pa);
-        char *mem = kalloc();
-        if (mem == 0) {
-          panic("copyout(): no more physical page for cow");
-        }
-        *pte = PA2PTE(mem) | flags;
-      }
+      *pte = PA2PTE(mem) | flags;
     }
     pa0 = PTE2PA(*pte);
     n = PGSIZE - (dstva - va0);

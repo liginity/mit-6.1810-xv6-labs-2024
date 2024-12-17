@@ -200,3 +200,37 @@ kcow_get_flags(void *pa)
   }
   return kmem.pg_flags[PA_TO_RC_ARRAY_INDEX((uint64)pa)];
 }
+
+// return a writable page from a cow page.
+// THE LESSON: getting the value of reference count
+//     and changing its value after doing some check,
+//     the two things should be done in the same critical region.
+void *
+kcow_get_page(void *pa, int do_copy)
+{
+  if (((uint64)pa % PGSIZE) != 0 || (char *)pa < end || (uint64)pa >= PHYSTOP)
+    panic("kcow_get_rc");
+
+  void *new_pa = 0;
+  acquire(&kmem.lock);
+  if (kmem.phpgrcs[PA_TO_RC_ARRAY_INDEX((uint64)pa)] <= 0) {
+    panic("kcow_inc_rc: reference count error");
+  }
+
+  if (kmem.phpgrcs[PA_TO_RC_ARRAY_INDEX((uint64)pa)] == 1) {
+    new_pa = pa;
+    release(&kmem.lock);
+  } else {
+    kmem.phpgrcs[PA_TO_RC_ARRAY_INDEX((uint64)pa)] -= 1;
+    release(&kmem.lock);
+    new_pa = kalloc();
+    if (new_pa == 0) {
+      printf("failed to allocate new page for a cow page\n");
+    }
+  }
+
+  if (do_copy && new_pa && new_pa != pa) {
+    memmove(new_pa, pa, PGSIZE);
+  }
+  return new_pa;
+}

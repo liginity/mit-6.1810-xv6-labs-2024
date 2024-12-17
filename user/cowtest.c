@@ -133,7 +133,7 @@ void
 filetest()
 {
   printf("file: ");
-  printf("&buf = %p\n", &buf);
+  // printf("&buf = %p\n", &buf);
   buf[0] = 99;
 
   for(int i = 0; i < 4; i++){
@@ -225,7 +225,7 @@ forkforktest()
   }
 
   printf("ok\n");
-  printf("why failed here?\n");
+  // printf("why failed here?\n");
 }
 
 int

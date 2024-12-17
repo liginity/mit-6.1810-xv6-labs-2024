@@ -80,24 +80,13 @@ usertrap(void)
     } else {
       // this page has PTE_W bit in the record.
       // it is a cow page.
-      // MAYBE check stored flags and current flags.
-      int rc = kcow_get_rc((void *)pa);
-      if (rc <= 0) {
-        printf("invalid physical page: it has rc = 0\n");
-        panic("usertrap(): invalid reference count");
-      }
-      if (rc == 1) {
-        // just set PTE_W bit
-        *pte |= PTE_W;
+
+      char *mem;
+      mem = kcow_get_page((void *)pa, 1);
+      if (mem == 0) {
+        printf("failed to allocate new page for a cow-page\n");
+        setkilled(p);
       } else {
-        // allocate a new page
-        kcow_dec_rc((void *)pa);
-        char *mem = kalloc();
-        if (mem == 0) {
-          // failed to allocate more page
-          panic("no more new physical page for cow");
-        }
-        memmove(mem, (void *)pa, PGSIZE);
         *pte = PA2PTE(mem) | flags;
       }
     }

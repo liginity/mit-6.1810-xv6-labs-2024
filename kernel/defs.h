@@ -67,6 +67,7 @@ void            kcow_inc_rc(void *, int);
 void            kcow_dec_rc(void *);
 int             kcow_get_rc(void *);
 int             kcow_get_flags(void *);
+void*           kcow_get_page(void *, int);
 
 // log.c
 void            initlog(int, struct superblock*);
