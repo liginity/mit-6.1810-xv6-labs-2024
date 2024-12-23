@@ -176,3 +176,22 @@ printfinit(void)
   initlock(&pr.lock, "pr");
   pr.locking = 1;
 }
+
+void
+backtrace(void)
+{
+  printf("backtrace\n");
+  uint64 fp = r_fp();
+  uint64 stack_top = PGROUNDUP(fp);
+  uint64 return_address = *(uint64 *)(fp - 8);
+  uint64 old_fp = *(uint64 *)(fp - 16);
+  while (old_fp < stack_top && old_fp + PGSIZE >= stack_top) {
+    printf("%p\n", (void *)return_address);
+    // debug
+    printf("    fp = %p\n", (void *)fp);
+
+    fp = old_fp;
+    return_address = *(uint64 *)(fp - 8);
+    old_fp = *(uint64 *)(fp - 16);
+  }
+}
