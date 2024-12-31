@@ -85,6 +85,9 @@ usertrap(void)
       if (p->remaining_ticks == 0) {
         // invoke the alarm handler
         // TODO need to store the original epc.
+        // debug
+        // printf("at alarm: epc = %p\n", (void *)p->trapframe->epc);
+        p->trapframe->ra = p->trapframe->epc;
         p->trapframe->epc = (uint64)p->handler;
         usertrapret();
       }
