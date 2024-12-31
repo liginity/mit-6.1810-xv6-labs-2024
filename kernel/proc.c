@@ -707,3 +707,10 @@ sigalarm(int ticks, void (*handler)())
   p->handler = handler;
   p->remaining_ticks = ticks;
 }
+
+void
+sigreturn(void)
+{
+  struct proc *p = myproc();
+  p->remaining_ticks = p->ticks;
+}
