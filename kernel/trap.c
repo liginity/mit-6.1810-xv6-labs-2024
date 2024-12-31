@@ -76,6 +76,20 @@ usertrap(void)
   if(killed(p))
     exit(-1);
 
+  if (which_dev == 2) {
+    // for sigalarm
+    struct proc *p = myproc();
+    if (p->ticks != 0) {
+      // there is a sigalarm handler to check and run.
+      p->remaining_ticks -= 1;
+      if (p->remaining_ticks == 0) {
+        // invoke the alarm handler
+        // TODO need to store the original epc.
+        p->trapframe->epc = (uint64)p->handler;
+        usertrapret();
+      }
+    }
+  }
   // give up the CPU if this is a timer interrupt.
   if(which_dev == 2)
     yield();
