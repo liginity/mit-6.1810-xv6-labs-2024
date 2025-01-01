@@ -131,6 +131,14 @@ found:
     release(&p->lock);
     return 0;
   }
+  // assert that 1 page could hold 2 struct trapframe.
+  if (!(sizeof(struct trapframe) * 2 <= PGSIZE)) {
+    panic("expect to store 2 struct trapframe in a page");
+  }
+  p->alarm_trapframe = p->trapframe + 1;
+  // debug
+  // printf("p->trapframe = %p\n", p->trapframe);
+  // printf("p->alarm_trapframe = %p\n", p->alarm_trapframe);
 
   // An empty user page table.
   p->pagetable = proc_pagetable(p);
@@ -712,5 +720,6 @@ void
 sigreturn(void)
 {
   struct proc *p = myproc();
+  *p->trapframe = *p->alarm_trapframe;
   p->remaining_ticks = p->ticks;
 }

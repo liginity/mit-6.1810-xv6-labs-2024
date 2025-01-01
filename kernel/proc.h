@@ -109,4 +109,5 @@ struct proc {
   int ticks;
   void (*handler)();
   int remaining_ticks;
+  struct trapframe *alarm_trapframe;
 };

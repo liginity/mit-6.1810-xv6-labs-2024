@@ -87,7 +87,10 @@ usertrap(void)
         // TODO need to store the original epc.
         // debug
         // printf("at alarm: epc = %p\n", (void *)p->trapframe->epc);
-        p->trapframe->ra = p->trapframe->epc;
+        // p->trapframe->ra = p->trapframe->epc;
+
+        // store a copy of program context, that is, the registers.
+        *p->alarm_trapframe = *p->trapframe;
         p->trapframe->epc = (uint64)p->handler;
         usertrapret();
       }
