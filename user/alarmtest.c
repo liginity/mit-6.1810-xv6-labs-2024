@@ -165,9 +165,7 @@ slow_handler()
 void
 dummy_handler()
 {
-  // uint64 x;
   sigalarm(0, 0);
-  // asm volatile("li a0, 4");
   sigreturn();
 }
 
@@ -184,15 +182,11 @@ test3()
 
   asm volatile("lui a5, 0");
   asm volatile("addi a0, a5, 0xac" : : : "a0");
-  // NOTE when calling dummy_handler(),
-  //      register a0 is not stored by the compiler.
-  // dummy_handler();
   for(int i = 0; i < 500000000; i++)
     ;
   asm volatile("mv %0, a0" : "=r" (a0) );
 
   if(a0 != 0xac)
-    printf("a0 = %lu\n", a0),
     printf("test3 failed: register a0 changed\n");
   else
     printf("test3 passed\n");

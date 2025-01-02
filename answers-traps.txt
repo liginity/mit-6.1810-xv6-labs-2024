@@ -1,0 +1,26 @@
+Registers a0 to a7 contain arguments to functions.
+a2 holds 13 in main's call to printf.
+
+
+The function call to f is computed at compile time,
+and the compiler uses the result "12" for the expression "f(8)+1".
+The call to g in the function f is inlined,
+and there is an instruction that adds 3 to the function parameter.
+
+
+The function printf is located at address 0xa54.
+
+
+The value in the register ra just after the jalr to printf in main is 0x34.
+There is no jalr instruction in the output by compiler riscv64-linux-gnu-gcc (Debian 12.2.0-13) 12.2.0.
+There is only jal instruction.
+
+
+The output is "HE110 World".
+If the RISC-V were big-endian, then i should be set to 0x726c6400 to get the same output.
+There is no need to change 57616, because its hex-printed text is used.
+
+
+The content originally in the register a2 would be printed.
+Because the printf call uses 2 arguments in the format string,
+but only 1 argument is provided.
